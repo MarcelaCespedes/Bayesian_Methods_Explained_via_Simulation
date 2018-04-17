@@ -9,7 +9,7 @@ library(ggplot2)
 library(tweenr) # Available on CRAN
 library(ggforce) # Available on CRAN
 
-devtools::install_github("dgrtwo/gganimate")
+#devtools::install_github("dgrtwo/gganimate")
 library(gganimate) # Install from dgrtwo/gganimate
 
 set.seed(2)
@@ -29,7 +29,6 @@ dft <- tween_states(dfs, 10, 1, 'cubic-in', 200)
 head(dft,20)
 class(dft)
 
-
 dft$y <- dft$y - 0.5
 dft <- dft[dft$y != 14.5, ]
 dft$type <- 'Animate'
@@ -47,6 +46,40 @@ p <- ggplot(dft) +
 
 animation::ani.options(interval = 1/20)
 
-x11()
-gganimate(p, 'hist_ex.gif', title_frame = FALSE)
+# finally got this example working!!!
+# Turns out that I needed to have both R and ImageMagick installed not in 'Program Files' but in a directory
+# with no spaces!!!
+Sys.getenv("PATH")
+Sys.setenv(PATH = paste("C:\\Users\\ces007\\Documents\\ImageMagick-7.0.7-28-portable-Q16-x64", Sys.getenv("PATH"), sep = ";"))
+
+gganimate(p,'hist_ex.gif', title_frame = FALSE)
+#gganimate(p, 'hist_ex.gif', title_frame = FALSE)
+
+
+
+
+################################
+# example from ggaminate
+aq <- airquality
+aq$date <- as.Date(paste(1973, aq$Month, aq$Day, sep = "-"))
+head(aq)
+p2 <- ggplot(aq, aes(date, Temp, frame = Month, cumulative = TRUE)) +
+  geom_line()
+
+gganimate(p2, "airQuality.gif",title_frame = FALSE)  # <-- this is a crap example
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

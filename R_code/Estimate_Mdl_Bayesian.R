@@ -34,7 +34,7 @@ str(sim.dat)
 ##
 
 ## How long with the MCMC chain run?
-M = 1000
+M = 5000
 
 ## no. of observations in the data
 N = length(sim.dat$dat$x)
@@ -98,10 +98,10 @@ for(m in 2:M){
   
   
   # I think there is something wrong with the implementation of the rinvgamma()
-  #post.s2 <- rinvgamma(1, shape = shape.s2, rate = scale.s2)  # <-- this works!
+  post.s2 <- rinvgamma(1, shape = shape.s2, rate = scale.s2)  # <-- this works!
   #                                                           but I remember working on the scale, NOT rate
   
-  post.s2 <- 1/rgamma(1, shape = shape.s2, rate = scale.s2)
+  #post.s2 <- 1/rgamma(1, shape = shape.s2, rate = scale.s2)
   post.s2
   
   mcmc[m,3]<- post.s2
@@ -115,12 +115,118 @@ for(m in 2:M){
 head(mcmc)
 tail(mcmc)
 
-str(sim.dat)
+str(sim.dat)  # compare these values with the solution
 
 
-#####################################
-#####################################
 
-# ** to include MCMC diagnositics
+
+
+
+
+
+
+
+
+
+############################################
+############################################
+# MCMC diagnositics - check for convergence
+# The standard checks for convergence are
+# trace, density and autocorrelation plots
+
+source("multiplot.R")
+
+# apply burn-in and thinning
+burn.in<- floor(M/10)
+burn.in
+
+thin<- 3
+  
+mcmc1<- mcmc[seq(from = burn.in, to=M, by = thin),]
+dim(mcmc1)
+
+diagnostics<- data.frame(cbind(iter = seq(1:dim(mcmc1)[1]), mcmc1))
+colnames(diagnostics)<- c("iter", "B.0", "B.1", "s2")
+
+## get their 95% CI + posterior mean estimates
+
+data.frame(parameter = c("B.0", "B.1", "noise"),
+           posterior.mean = round(c(mean(diagnostics$B.0), mean(diagnostics$B.1), mean(diagnostics$s2)), 2),
+           low.ci = round(c(quantile(diagnostics$B.0, probs = 0.025), quantile(diagnostics$B.1, probs = 0.025), 
+                      quantile(diagnostics$s2, probs = 0.025)),2), 
+           high.ci = round(c(quantile(diagnostics$B.0, probs = 0.975), quantile(diagnostics$B.1, probs = 0.975), 
+                            quantile(diagnostics$s2, probs = 0.975)),2),
+           Solution = c(sim.dat$B.0, sim.dat$B.1, sim.dat$noise))
+
+
+
+## **********
+## trace
+## **********
+
+trace.B.0<- ggplot(diagnostics, aes(x=iter, y=B.0)) + geom_line() +
+  theme_bw() + theme(legend.position = "none") + ggtitle("Trace B.0")
+
+trace.B.1<- ggplot(diagnostics, aes(x=iter, y=B.1)) + geom_line() +
+  theme_bw() + theme(legend.position = "none") + ggtitle("Trace B.1")
+
+trace.s2<- ggplot(diagnostics, aes(x=iter, y=s2)) + geom_line() +
+  theme_bw() + theme(legend.position = "none") + ggtitle("Trace noise (s2)")
+
+x11()
+multiplot(trace.B.0, trace.B.1, trace.s2, cols = 3)
+
+
+## ********
+## Density
+## ********
+
+d.B.0<- ggplot(diagnostics, aes(x=B.0)) + geom_density() + 
+  theme_bw() + theme(legend.position = "none") + ggtitle("Density B.0")
+
+d.B.1<- ggplot(diagnostics, aes(x=B.1)) + geom_density() + 
+  theme_bw() + theme(legend.position = "none") + ggtitle("Density B.1")
+
+d.s2<- ggplot(diagnostics, aes(x=s2)) + geom_density() + 
+  theme_bw() + theme(legend.position = "none") + ggtitle("Density noise (s2)")
+
+x11()
+multiplot(d.B.0, d.B.1, d.s2, cols = 3)
+
+## *****************
+## Autocorrelation
+## *****************
+
+B.0.autocorr<- with(acf(diagnostics$B.0, plot=FALSE), data.frame(lag, acf))
+B.0.ac<- ggplot(data = B.0.autocorr, aes(x=lag, y=acf)) + geom_hline(aes(yintercept = 0)) + theme_bw() +
+  geom_segment(mapping = aes(xend = lag, yend = 0)) + ggtitle("Auto-corr B.0")
+
+
+B.1.autocorr<- with(acf(diagnostics$B.1, plot=FALSE), data.frame(lag, acf))
+B.1.ac<- ggplot(data = B.0.autocorr, aes(x=lag, y=acf)) + geom_hline(aes(yintercept = 0)) + theme_bw() +
+  geom_segment(mapping = aes(xend = lag, yend = 0)) + ggtitle("Auto-corr B.1")
+
+
+s2.autocorr<- with(acf(diagnostics$s2, plot=FALSE), data.frame(lag, acf))
+s2.ac<- ggplot(data = B.0.autocorr, aes(x=lag, y=acf)) + geom_hline(aes(yintercept = 0)) + theme_bw() +
+  geom_segment(mapping = aes(xend = lag, yend = 0)) + ggtitle("Auto-corr noise (s2)")
+
+
+x11()
+multiplot(B.0.ac, B.1.ac, s2.ac, cols = 3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
