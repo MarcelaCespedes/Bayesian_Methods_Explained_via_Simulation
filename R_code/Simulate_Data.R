@@ -19,11 +19,14 @@ N = 500 # Number of observations to generate
 
 ##
 ## Define covariates
+## Feel free to fiddle with these values to get something more life-like
+## rather than this text-book styled example
+
 B.0 = 5  # intercept
 B.1 = 1 # slope
-x = runif(N, min = 0, max = 20) # generate covariate
+noise = 1  # variance/ random variation of the model
 
-noise = 0.2  # variance/ random variation of the model
+x = runif(N, min = 0, max = 20) # generate covariate
 
 ##
 ## Generate data
@@ -35,4 +38,7 @@ y = B.0 + B.1*x + rnorm(N, mean = 0, sd = sqrt(noise))
 dat = data.frame(x = x, y=y)
 
 x11()
-ggplot(dat, aes(x=x, y=y)) + geom_point() + theme_bw() + ggtitle("Simulated data")
+ggplot(dat, aes(x=x, y=y)) + geom_point() + theme_bw() + ggtitle("Simulated data") +
+  ylab("Response (y)") + xlab("Covariate (x)")
+
+save(dat, file = "Sim.Data.R")
