@@ -1,5 +1,5 @@
 #############################################
-# Fit a Bayesian linear model
+# Visualise the priors for the Bayesian linear model
 # 
 # Model is 
 #  y  = B.0 + B.1*x + noise 
@@ -22,6 +22,15 @@ str(sim.dat)
 
 ##
 ## Visualise priors - dot/ red line denotes solution
+
+# recall the priors for vector B = [B.0, B.1] is a multivariate normal distribution 
+# with mean mu = c(0,0), and variance-covariance matrix Sigma = matrix(c(100, 0, 0, 100), 2,2)
+# i.e MVN(mu, Sigma)
+# 
+# Likewise the priors for noise (sigma^2) is inverse-gamma distribution with shape and scale value 0.1
+# i.e IG(0.1, 0.1)
+
+
 
 ########################################
 # for (B.0, B.1)  **********************
