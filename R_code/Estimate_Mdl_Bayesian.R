@@ -148,7 +148,13 @@ dim(mcmc1)
 diagnostics<- data.frame(cbind(iter = seq(1:dim(mcmc1)[1]), mcmc1))
 colnames(diagnostics)<- c("iter", "B.0", "B.1", "s2")
 
-## get their 95% CI + posterior mean estimates
+full.results = list(diagnostics = diagnostics, sim.dat=sim.dat)
+save(full.results, file = "MCMC_results.Rdata")
+
+## *************************************************
+## Summary of posterior chains (mean and 95% CI) 
+##                and comparison to the solution
+## **************************************************
 
 data.frame(parameter = c("B.0", "B.1", "noise"),
            posterior.mean = round(c(mean(diagnostics$B.0), mean(diagnostics$B.1), mean(diagnostics$s2)), 2),
