@@ -26,12 +26,14 @@ mod<- lm(y~x, data = dat)
 summary(mod)
 summary(mod)$sigma^2  # <-- noise (s2) estimate
 
-confint(mod, level = 0.95)
-
-
+confint(mod, level = 0.95)  # CI values for B.0 and B.1
 
 ## summary of model output
-
+data.frame(parameters = c("B.0", "B.1", "s2"), 
+           est = round(c(summary(mod)$coefficient[1,1], summary(mod)$coefficient[2,1], summary(mod)$sigma^2),2),
+           low.ci = c(round(c(confint(mod, level = 0.95)[1,1], confint(mod, level = 0.95)[2,1]),2), "-")  ,
+           high.ci = c(round(c(confint(mod, level = 0.95)[1,2], confint(mod, level = 0.95)[2,2]),2), "-"),
+           Solution = c(sim.dat$B.0, sim.dat$B.1, sim.dat$noise) )
 
 
 
