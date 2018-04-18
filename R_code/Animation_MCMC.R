@@ -90,7 +90,7 @@ p.a <- ggplot(dft.a) +
 animation::ani.options(interval = 1/20)
 
 ptm <- proc.time()
-# with 2 million frames ... this takes a long time (> 5 min) to run
+# with hundreds of thousands of frames ... this takes a long time (> 5 min) to run
 gganimate(p.a,'attempt1_B0.gif', title_frame = FALSE)
 (proc.time() - ptm)/60  # time in minutes
 
